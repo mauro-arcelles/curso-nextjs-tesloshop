@@ -3,7 +3,7 @@ import { IProduct } from '@/interfaces';
 import { Product } from '@/models';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-type Data = { message: string; } | { products: IProduct[]; };
+type Data = { message: string; } | IProduct[];
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   switch (req.method) {
@@ -32,5 +32,5 @@ async function searchProducts(req: NextApiRequest, res: NextApiResponse<Data>) {
     .lean();
   await db.disconnect();
 
-  res.status(200).json({ products });
+  res.status(200).json(products);
 }
