@@ -3,13 +3,14 @@ import { AppBar, Badge, Box, Button, IconButton, Input, InputAdornment, Link, To
 import { ClearOutlined, SearchOutlined, ShoppingCartOutlined } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
-import { UiContext } from '@/context';
+import { CartContext, UiContext } from '@/context';
 
 
 export const Navbar = () => {
 
   const { asPath, push } = useRouter();
   const { toggleSideMenu } = useContext(UiContext);
+  const { numberOfItems } = useContext(CartContext);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -79,8 +80,6 @@ export const Navbar = () => {
             )
         }
 
-
-
         <IconButton
           sx={{ display: { xs: 'flex', sm: 'none' } }}
           onClick={toggleSideMenu}
@@ -90,7 +89,7 @@ export const Navbar = () => {
 
         <Link component={NextLink} href='/cart' passHref>
           <IconButton>
-            <Badge badgeContent={2} color='secondary'>
+            <Badge badgeContent={numberOfItems > 9 ? '+9' : numberOfItems} color='secondary'>
               <ShoppingCartOutlined />
             </Badge>
           </IconButton>
