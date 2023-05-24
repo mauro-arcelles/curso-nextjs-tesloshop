@@ -15,6 +15,7 @@ interface CtxProps {
   subTotal: number;
   tax: number;
   total: number;
+  isLoaded: boolean;
 }
 
 export const CartContext = createContext<CtxProps>({} as CtxProps);
@@ -23,6 +24,7 @@ export const CartContext = createContext<CtxProps>({} as CtxProps);
 // Provider
 // --------------------------------------------------------------------
 export interface CartState {
+  isLoaded: boolean;
   cart: ICartProduct[];
   numberOfItems: number;
   subTotal: number;
@@ -31,6 +33,7 @@ export interface CartState {
 }
 
 const initialState: CartState = {
+  isLoaded: false,
   cart: [],
   numberOfItems: 0,
   subTotal: 0,
