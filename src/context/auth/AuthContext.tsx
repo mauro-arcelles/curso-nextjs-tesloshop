@@ -5,6 +5,7 @@ import { testoApi } from '@/api';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { useSession, signOut } from 'next-auth/react';
 
 // --------------------------------------------------------------------
 // Context
@@ -37,10 +38,22 @@ export const AuthProvider = ({ children }: Props) => {
 
   const [state, dispatch] = useReducer(authReducer, initialState);
   const router = useRouter();
+  const { data, status } = useSession();
 
   useEffect(() => {
-    checkToken();
-  }, []);
+    if (status === 'loading') return;
+
+    if (data) {
+      console.log({ user: data.user });
+      dispatch({ type: '[AUTH] - Login', payload: data.user as IUser });
+    } else {
+      // dispatch({ type: '[AUTH] - Logout' });
+    }
+  }, [status, data]);
+
+  // useEffect(() => {
+  //   checkToken();
+  // }, []);
 
   const checkToken = async () => {
     if (!Cookies.get('token')) return;
@@ -97,9 +110,18 @@ export const AuthProvider = ({ children }: Props) => {
   };
 
   const logout = () => {
-    Cookies.remove('token');
+    // Cookies.remove('token');
     Cookies.remove('cart');
-    router.reload();
+    Cookies.remove('firstName');
+    Cookies.remove('lastName');
+    Cookies.remove('address');
+    Cookies.remove('address2');
+    Cookies.remove('zip');
+    Cookies.remove('city');
+    Cookies.remove('country');
+    Cookies.remove('phone');
+    signOut();
+    // router.reload();
   };
 
   return (

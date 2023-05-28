@@ -11,11 +11,25 @@ interface CtxProps {
   addProductToCart: (product: ICartProduct) => void;
   updateCartQuantity: (product: ICartProduct) => void;
   removeCartProduct: (product: ICartProduct) => void;
+  updateAddress: (address: ShippingAddress) => void;
   numberOfItems: number;
   subTotal: number;
   tax: number;
   total: number;
   isLoaded: boolean;
+
+  shippingAddress?: ShippingAddress;
+}
+
+export interface ShippingAddress {
+  firstName: string;
+  lastName: string;
+  address: string;
+  address2?: string;
+  zip: string;
+  city: string;
+  country: string;
+  phone: string;
 }
 
 export const CartContext = createContext<CtxProps>({} as CtxProps);
@@ -30,6 +44,7 @@ export interface CartState {
   subTotal: number;
   tax: number;
   total: number;
+  shippingAddress?: ShippingAddress;
 }
 
 const initialState: CartState = {
@@ -39,6 +54,7 @@ const initialState: CartState = {
   subTotal: 0,
   tax: 0,
   total: 0,
+  shippingAddress: undefined,
 };
 
 type Props = { children?: React.ReactNode; };
@@ -63,6 +79,23 @@ export const CartProvider = ({ children }: Props) => {
     Cookie.set('cart', JSON.stringify(state.cart));
 
   }, [state.cart]);
+
+  useEffect(() => {
+    if (Cookie.get('firstName')) {
+      const shippingAddress = {
+        firstName: Cookie.get('firstName') || '',
+        lastName: Cookie.get('lastName') || '',
+        address: Cookie.get('address') || '',
+        address2: Cookie.get('address2') || '',
+        zip: Cookie.get('zip') || '',
+        city: Cookie.get('city') || '',
+        country: Cookie.get('country') || '',
+        phone: Cookie.get('phone') || '',
+      };
+
+      dispatch({ type: '[CART] - LoadAddress from cookies', payload: shippingAddress });
+    }
+  }, []);
 
   useEffect(() => {
     const numberOfItems = state.cart.reduce((acc, curr) => acc + curr.quantity, 0);
@@ -109,6 +142,18 @@ export const CartProvider = ({ children }: Props) => {
     dispatch({ type: '[CART] - Remove cart product', payload: product });
   };
 
+  const updateAddress = (address: ShippingAddress) => {
+    Cookie.set('firstName', address.firstName);
+    Cookie.set('lastName', address.lastName);
+    Cookie.set('address', address.address);
+    Cookie.set('address2', address.address2 || '');
+    Cookie.set('zip', address.zip);
+    Cookie.set('city', address.city);
+    Cookie.set('country', address.country);
+    Cookie.set('phone', address.phone);
+    dispatch({ type: '[CART] - Update shipping address', payload: address });
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -116,6 +161,7 @@ export const CartProvider = ({ children }: Props) => {
         addProductToCart,
         updateCartQuantity,
         removeCartProduct,
+        updateAddress
       }}
     >
       {children}

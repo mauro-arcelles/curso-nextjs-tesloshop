@@ -43,6 +43,7 @@ const CardPage = () => {
                   color="secondary"
                   className="circular-btn"
                   fullWidth
+                  onClick={() => router.push('/checkout/summary')}
                 >
                   Checkout
                 </Button>

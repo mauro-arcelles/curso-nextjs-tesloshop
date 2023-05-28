@@ -17,6 +17,10 @@ export const isValidToken = (token: string): Promise<string> => {
     throw new Error('No hay semilla para el token');
   }
 
+  if (token.length <= 10) {
+    return Promise.reject('Token no válido');
+  }
+
   return new Promise((resolve, reject) => {
     try {
       jwt.verify(token, process.env.JWT_SECRET_SEED || '', (err, payload) => {
@@ -29,6 +33,7 @@ export const isValidToken = (token: string): Promise<string> => {
         resolve(_id);
       });
     } catch (error) {
+      console.log(error)
       reject('Token no válido');
     }
   }
